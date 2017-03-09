@@ -26,13 +26,14 @@ The metric used for reporting the performance of a language model is its perplex
 
 
 ### Using RNNs to improve performance
-The biggest problem with the simple model is that to predict the next word in the sentence, it only uses a single preceding word. If we could build a model that would look at all preceding words there should be an improvement in its performance. We can accomplish this by augmenting the network with a recurrent neural network, as shown below.
+The biggest problem with the simple model is that to predict the next word in the sentence, it only uses a single preceding word. If we could build a model that would remember even a few of the preceding words there should be an improvement in its performance. To understand why adding more words helps, 
+We can accomplish this by augmenting the network with a recurrent neural network, as shown below.
 
 
 
 
 
-This model is just like the simple one, just that after the input embedding operation we feed the resulting vector of size 200 into a 2 layer LSTM, which then outputs a vector also of size 200. Then, just like before, we multiply this vector by the output embedding and then apply the softmax function.
+This model is just like the simple one, just that after the input embedding operation we feed the resulting vector of size 200 into a 2 layer LSTM[colah], which then outputs a vector also of size 200. Then, just like before, we multiply this vector by the output embedding and then apply the softmax function.
 
 
-Now we have a model that at each timestep gets not only the current word, but also the state of the LSTM layers from the previous timestep, and uses this to predict the next word. This state encodes all previously seen words (in an opaque and uninterpretable way). As expected, performance improves and the perplexity of this model on the test set is about 114. 
+Now we have a model that at each time step gets not only the current word, but also the state of the LSTM from the previous time step, and uses this to predict the next word. This state encodes the previously seen words (words that we saw recently have a much larger impact on this state then words we saw a while ago). As expected, performance improves and the perplexity of this model on the test set is about 114. 
