@@ -14,6 +14,7 @@ The first part of this post presents a simple neural network that solves this ta
 
 ##A simple model
 
+s
 To begin we will build a simple model that given a single word taken from some sentence tries predicting the word following it.
 
 We represent words using one-hot vectors. After giving a unique integer ID `n` to each word in our vocabulary, each word is represented as a one dimensional vector of the size of the vocabulary (`V`), which is set to `0` everywhere except for a single `1` at element `n`. 
