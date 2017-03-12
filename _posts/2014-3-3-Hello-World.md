@@ -43,7 +43,7 @@ Now we have a model that at each time step gets not only the current word, but a
 [^1]: Some *crazy* footnote definition.
 
 [^footnote]:
-    > Blockquotes can be in a footnote.
+    > Blockquotes  can be in a footnote.
 
         as well as code blocks
 
