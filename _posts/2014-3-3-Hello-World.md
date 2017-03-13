@@ -31,7 +31,7 @@ To train this model we use stochastic gradient descent, and the loss used is the
 For the `(input, target-output)` word pairs we use the Penn Treebank dataset which contains around 40K sentences from news articles. To generate word pairs for the model to learn from, we will just take every pair of neighbouring words from the text and use the first one as the input word and the second one as the target output word. So for example for the sentence `“The cat is on the mat”` we will extract the following word pairs for training: `(The, cat)`, `(cat, is)`, `(is, on)`, and so on. The vocabulary of the Penn Treebank dataset contains exactly `10,000` words. 
 
 The metric used for reporting the performance of a language model is its perplexity on the test set. It is defined as- $$e^{-\frac{1}{N}\sum_{i=1}^{N} \ln p_{\text{target}_i}}  $$, where $$p_{\text{target}_i}$$ is the probability given by the model to the target word at iteration 'i'. Perplexity is a decreasing function of the average log probability that the model assigns to the target word at every iteration. We want to maximize the probability that we give to the target word at every iteration, which means that we want to minimize the perplexity (the optimal perplexity is `1`).  
-The perplexity for the simple model is about `183` on the test set, which means that on average it assigns a probability of about $$ 0.005$$  to the target word in every iteration on the test set. Its much better than just a random guess (which would assign a probability of $$\frac {1} {V} = \frac {1} {10,000} = 0.0001$$ to the correct word), but we can do much better.
+The perplexity for the simple model[^sg] is about `183` on the test set, which means that on average it assigns a probability of about $$ 0.005$$  to the target word in every iteration on the test set. Its much better than just a random guess (which would assign a probability of $$\frac {1} {V} = \frac {1} {10,000} = 0.0001$$ to the correct word), but we can do much better.
 
 
 ### Using RNNs to improve performance
@@ -46,16 +46,30 @@ _rnn model_
 This model is just like the simple one, just that after encoding the current input word we feed the resulting representation (of size `200`) into a two layer [LSTM](http://colah.github.io/posts/2015-08-Understanding-LSTMs/), which then outputs a vector also of size `200` (at every timestep the LSTM also recieved a vector of size `200` representing it's previous state). Then, just like before, we use the decoder to convert this vector into a vector of probability values. 
 
 Now we have a model that at each time step gets not only the current word representation, but also the state of the LSTM from the previous time step, and uses this to predict the next word. The state of the LSTM is a representation of the previously seen words (note that words that we saw recently have a much larger impact on this state then words we saw a while ago). 
-As expected, performance improves and the perplexity of this model on the test set is about `114`. An implementation of this model, along with a detailed explanation, is available in [Tensorflow](https://www.tensorflow.org/tutorials/recurrent).
+As expected, performance improves and the perplexity of this model on the test set is about `114`. An implementation of this model[^zaremba], along with a detailed explanation, is available in [Tensorflow](https://www.tensorflow.org/tutorials/recurrent).
 
 ### Reaching the state of the art
 `114` perplexity is good but we can still do much better. In this section I'll present some recent advances that improve the performance of RNN based language models. 
 
 #### Dropout
 
+We could try improving the network by increasing the size of the embeddings and LSTM layers (until now the size we used was `200`), but soon enough this stops increasing the performance because the network overfits the training data (it uses its increased capacity to remember properties of the training set which leads to inferior generalization, i.e. performance on the unseen test set). One way to counter this, by regularizing the model, is to use dropout. 
+
+The diagram below is a visualization of the RNN based model unrolled across three time steps. `x` and `y` are the input and output sequences, and the grey boxes represent the LSTM layers. Vertical arrows represent an input to the layer that is from the same time step, and horizontal arrows represent connections that carry information from previous time steps. 
+_regular_
+
+We can apply dropout on the vertical (same time step) connections:
+_vanilla dropout_
+
+
+
+
 
 
 #### Weight tying 
 
-[^1]: Some *crazy* footnote definition.
+(zoph & le)
+
+[^sg]: This model is the skip-gram word2vec model presented in []() 
+[^zareba]: This model is the small model presented in [Regularizing (Zaremba et. al. 2014)]()
 
