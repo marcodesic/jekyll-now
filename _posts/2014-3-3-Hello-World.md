@@ -9,7 +9,7 @@ _keyboard_
 
 Language models are a fundamental part of many systems that attempt to solve hard natural language processing tasks such as machine translation and speech recognition. 
 
-The first part of this post presents a simple feedforward neural network that solves this task. In the second part of the post, we will improve the simple model by adding to it a recurrent neural network. The final part will discuss further ways this model can be enhanced. 
+The first part of this post presents a simple feedforward neural network that solves this task. In the second part of the post, we will improve the simple model by adding to it a recurrent neural network (RNN). The final part will discuss two recently proposed techniques for improving RNN based language models, which are currently used to obtain state of the art results.
 
 
 ### A simple model
@@ -66,7 +66,7 @@ The arrows are colored in places were we apply dropout. We use different dropout
 
 Applying dropout to the recurrent connections harms the performance, and so in this initial use of dropout we use it only on connections within the same time step. 
 
-A recent dropout modification[^variational] solves this problem and improves the model's performance even more by 
+A recent dropout modification[^variational] solves this problem and improves the model's performance even more by using the same dropout masks at each time step. 
 
 
 
