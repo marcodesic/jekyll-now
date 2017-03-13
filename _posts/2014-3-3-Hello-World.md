@@ -68,8 +68,9 @@ Applying dropout to the recurrent connections harms the performance, and so in t
 
 A recent dropout modification[^variational] solves this problem and improves the model's performance even more by using the same dropout masks at each time step. 
 
+_variational do_
 
-
+For example, using variational dropout, the mask used between the connection of and...
 
 #### Weight Tying 
 
