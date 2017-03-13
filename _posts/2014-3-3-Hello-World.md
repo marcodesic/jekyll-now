@@ -5,7 +5,7 @@ mathjax: true
 ---
 
 Language models assign probabilities to word sequences. Those three words that appear right above your keyboard on your phone that try to predict the next word you’ll type are one of the uses of language modelling. In the case shown below, the language model is predicting that “in”, “is” and “to” have a high probability of being the next word in the given sentence. Internally, for each word in its’ vocabulary, the language model computes the probability that it will be the next word, but the user only gets to see the top three most probable words.  
-
+_keyboard_
 
 Language models are a fundamental part of many systems that attempt to solve hard natural language processing tasks such as machine translation and speech recognition. 
 
@@ -15,6 +15,8 @@ The first part of this post presents a simple feedforward neural network that so
 ### A simple model
 
 To begin we will build a simple model that given a single word taken from some sentence tries predicting the word following it.
+
+_simple model_
 
 We represent words using one-hot vectors: after giving a unique integer ID `n` to each word in our vocabulary, each word is represented as a one dimensional vector of the size of the vocabulary (`V`), which is set to `0` everywhere except for a single `1` at element `n`. 
 
@@ -33,10 +35,11 @@ The perplexity for the simple model is about `183` on the test set, which means 
 
 
 ### Using RNNs to improve performance
-The biggest problem with the simple model is that to predict the next word in the sentence, it only uses a single preceding word. If we could build a model that would remember even a few of the preceding words there should be an improvement in its performance. To understand why adding more words helps, 
-We can accomplish this by augmenting the network with a recurrent neural network, as shown below.
+The biggest problem with the simple model is that to predict the next word in the sentence, it only uses a single preceding word. If we could build a model that would remember even just a few of the preceding words there should be an improvement in its performance. To understand why adding memory helps, think of the following example: what words follow the word "drink"? You'd probably say "coffee", "beer", "soda",... If I told you the word sequence was actually "Cows drink", then you would completley change your answer.
 
+We can add memory to our model by augmenting it with a recurrent neural network, as shown below.
 
+_rnn model_
 
 
 
