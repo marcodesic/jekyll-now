@@ -43,12 +43,19 @@ _rnn model_
 
 
 
-This model is just like the simple one, just that after the input embedding operation we feed the resulting vector of size 200 into a 2 layer LSTM[colah], which then outputs a vector also of size 200. Then, just like before, we multiply this vector by the output embedding and then apply the softmax function.
+This model is just like the simple one, just that after encoding the current input word we feed the resulting representation (of size `200`) into a two layer [LSTM](http://colah.github.io/posts/2015-08-Understanding-LSTMs/), which then outputs a vector also of size `200` (at every timestep the LSTM also recieved a vector of size `200` representing it's previous state). Then, just like before, we use the decoder to convert this vector into a vector of probability values. 
+
+Now we have a model that at each time step gets not only the current word representation, but also the state of the LSTM from the previous time step, and uses this to predict the next word. The state of the LSTM is a representation of the previously seen words (note that words that we saw recently have a much larger impact on this state then words we saw a while ago). 
+As expected, performance improves and the perplexity of this model on the test set is about `114`. An implementation of this model, along with a detailed explanation, is available in [Tensorflow](https://www.tensorflow.org/tutorials/recurrent).
+
+### Reaching the state of the art
+`114` perplexity is good but we can still do much better. In this section I'll present some recent advances that improve the performance of RNN based language models. 
+
+#### Dropout
 
 
-Now we have a model that at each time step gets not only the current word, but also the state of the LSTM from the previous time step, and uses this to predict the next word. This state encodes the previously seen words (note that words that we saw recently have a much larger impact on this state then words we saw a while ago)[^1]. As expected, performance improves and the perplexity of this model on the test set is about 114. [link to https://www.tensorflow.org/tutorials/recurrent]
 
-
+#### Weight tying 
 
 [^1]: Some *crazy* footnote definition.
 
