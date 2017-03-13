@@ -7,9 +7,9 @@ mathjax: true
 Language models assign probabilities to word sequences. Those three words that appear right above your keyboard on your phone and try to predict the next word you’ll type are one of the uses of language modelling. In the case shown below, the language model is predicting that “in”, “is” and “to” have a high probability of being the next word in the given sentence. Internally, for each word in its’ vocabulary, the language model computes the probability that it will be the next word, but the user only gets to see the top three most probable words.  
 
 
-Language models are a fundamental and critical part of many systems that attempt to solve solve hard natural language processing tasks such as machine translation and speech recognition. 
+Language models are a fundamental part of many systems that attempt to solve hard natural language processing tasks such as machine translation and speech recognition. 
 
-The first part of this post presents a simple neural network that solves this task. In the second part of the post, we will improve the simple model by adding to it a recurrent neural network. The final part will discuss further ways this model can be enhanced. 
+The first part of this post presents a simple feedforward neural network that solves this task. In the second part of the post, we will improve the simple model by adding to it a recurrent neural network. The final part will discuss further ways this model can be enhanced. 
 
 
 ### A simple model
@@ -20,9 +20,12 @@ We represent words using one-hot vectors. After giving a unique integer ID `n` t
 
 
 The model takes the one hot vector representing the input word, multiplies it by a matrix of size `(V,200)` which we call the input embedding. This results in a vector of size `200`, which we then multiply by a matrix of size `(200,V)`, which we call the output embedding. The resulting vector of size `V` is then passed through the softmax function, normalizing its values into a probability distribution (meaning each one of the values is between `0` and `1`, and their sum is `1`). 
-To train this model we use SGD, and the loss used is the negative log likelihood loss. For the (input, output) word pairs we use the Penn Treebank dataset which contains around 40K sentences from news articles. To generate word pairs for the model to learn from, we will just take every pair of neighbouring words from the text and use the first one as the input and the second one as the target output. So for example for the sentence `“The cat is on the mat”` we will extract the following word pairs for training: `(The, cat)`, `(cat, mat)`, `(cat, is)`, and so on. The vocabulary of the Penn Treebank dataset contains exactly `10,000` words. 
 
-The metric used for reporting the performance of a language model is its perplexity on the test set. It is defined as- $$e^{-\frac{1}{N}\sum_{i=1}^{N} \ln p_{\text{target}_i}}  $$, where $$p_{\text{target}_i}$$ is the probability given by the model to the target word at iteration 'i'. Perplexity is a decreasing function of the average log probability that the model assigns to the target word at every iteration. We want to maximize the probability that we give to the target word at every iteration, which means that we want to minimize the perplexity (the optimal perplexity is 1).  The perplexity for the simple model is about `183` on the test set, which means that on average it assigns a probability of about $$ 0.005$$  to the target word in every iteration on the test set. Its much better than just a random guess (which would assign a probability of $$\frac {1} {V} = \frac {1} {10,000} = 0.0001$$ to the correct word), but we can do much better.
+To train this model we use stochastic gradient descent, and the loss used is the cross-entropy loss. Intuitively, this loss measures the distance between the output distribution predicted by the model and the target distribution at every timestep. The target distribution at each iteration is a one-hot vector representing the current target word. 
+
+For the (input, output) word pairs we use the Penn Treebank dataset which contains around 40K sentences from news articles. To generate word pairs for the model to learn from, we will just take every pair of neighbouring words from the text and use the first one as the input and the second one as the target output. So for example for the sentence `“The cat is on the mat”` we will extract the following word pairs for training: `(The, cat)`, `(cat, is)`, `(is, on)`, and so on. The vocabulary of the Penn Treebank dataset contains exactly `10,000` words. 
+
+The metric used for reporting the performance of a language model is its perplexity on the test set. It is defined as- $$e^{-\frac{1}{N}\sum_{i=1}^{N} \ln p_{\text{target}_i}}  $$, where $$p_{\text{target}_i}$$ is the probability given by the model to the target word at iteration 'i'. Perplexity is a decreasing function of the average log probability that the model assigns to the target word at every iteration. We want to maximize the probability that we give to the target word at every iteration, which means that we want to minimize the perplexity (the optimal perplexity is '1').  The perplexity for the simple model is about `183` on the test set, which means that on average it assigns a probability of about $$ 0.005$$  to the target word in every iteration on the test set. Its much better than just a random guess (which would assign a probability of $$\frac {1} {V} = \frac {1} {10,000} = 0.0001$$ to the correct word), but we can do much better.
 
 
 ### Using RNNs to improve performance
@@ -42,14 +45,3 @@ Now we have a model that at each time step gets not only the current word, but a
 
 [^1]: Some *crazy* footnote definition.
 
-[^footnote]:
-    > Blockquotes  can be in a footnote.
-
-        as well as code blocks
-
-    or, naturally, simple paragraphs.
-
-[^other-note]:       no code block here (spaces are stripped away)
-
-[^codeblock-note]:
-        this is now a code block (8 spaces indentation)
