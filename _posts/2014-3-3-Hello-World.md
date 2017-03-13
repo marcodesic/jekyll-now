@@ -66,10 +66,10 @@ _vanilla dropout_
 
 
 
-#### Weight tying 
+#### Weight Tying 
 
 (zoph & le)
 
 [^sg]: This model is the skip-gram word2vec model presented in []() 
-[^zareba]: This model is the small model presented in [Regularizing (Zaremba et. al. 2014)]()
+[^zaremba]: This model is the small model presented in [Regularizing (Zaremba et. al. 2014)]()
 
