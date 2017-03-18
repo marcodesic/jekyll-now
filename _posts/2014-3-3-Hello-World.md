@@ -78,4 +78,4 @@ For example, using variational dropout, the mask used between the connection of 
 
 [^sg]: This model is the skip-gram word2vec model presented in []() 
 [^zaremba]: This model is the small model presented in [Regularizing (Zaremba et. al. 2014)]()
-
+[^variational]: yarin papers
