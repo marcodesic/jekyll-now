@@ -12,7 +12,7 @@ Language models are a fundamental part of many systems that attempt to solve har
 The first part of this post presents a simple feedforward neural network that solves this task. In the second part of the post, we will improve the simple model by adding to it a recurrent neural network (RNN). The final part will discuss two recently proposed techniques for improving RNN based language models, which are currently used to obtain state of the art results.
 
 
-### A simple model
+## A simple model
 
 To begin we will build a simple model that given a single word taken from some sentence tries predicting the word following it.
 
@@ -34,7 +34,7 @@ The metric used for reporting the performance of a language model is its perplex
 The perplexity for the simple model[^sg] is about `183` on the test set, which means that on average it assigns a probability of about $$ 0.005$$  to the target word in every iteration on the test set. Its much better than just a random guess (which would assign a probability of $$\frac {1} {N} = \frac {1} {10,000} = 0.0001$$ to the correct word), but we can do much better.
 
 
-### Using RNNs to improve performance
+## Using RNNs to improve performance
 The biggest problem with the simple model is that to predict the next word in the sentence, it only uses a single preceding word. If we could build a model that would remember even just a few of the preceding words there should be an improvement in its performance. To understand why adding memory helps, think of the following example: what words follow the word "drink"? You'd probably say "coffee", "beer", "soda",... If I told you the word sequence was actually "Cows drink", then you would completley change your answer.
 
 We can add memory to our model by augmenting it with a recurrent neural network, as shown below.
@@ -48,10 +48,10 @@ This model is just like the simple one, just that after encoding the current inp
 Now we have a model that at each time step gets not only the current word representation, but also the state of the LSTM from the previous time step, and uses this to predict the next word. The state of the LSTM is a representation of the previously seen words (note that words that we saw recently have a much larger impact on this state then words we saw a while ago). 
 As expected, performance improves and the perplexity of this model on the test set is about `114`. An implementation of this model[^zaremba], along with a detailed explanation, is available in [Tensorflow](https://www.tensorflow.org/tutorials/recurrent).
 
-### Reaching the state of the art
+## Reaching the state of the art
 `114` perplexity is good but we can still do much better. In this section I'll present some recent advances that improve the performance of RNN based language models. 
 
-#### Dropout
+### Dropout
 
 We could try improving the network by increasing the size of the embeddings and LSTM layers (until now the size we used was `200`), but soon enough this stops increasing the performance because the network overfits the training data (it uses its increased capacity to remember properties of the training set which leads to inferior generalization, i.e. performance on the unseen test set). One way to counter this, by regularizing the model, is to use dropout. 
 
@@ -72,7 +72,7 @@ _variational do_
 
 For example, using variational dropout, the mask used between the connection of and...
 
-#### Weight Tying 
+### Weight Tying 
 
 (zoph & le)
 
