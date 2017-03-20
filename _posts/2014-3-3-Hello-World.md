@@ -35,7 +35,7 @@ The perplexity for the simple model[^sg] is about `183` on the test set, which m
 
  
 ## Using RNNs to improve performance
-The biggest problem with the simple model is that to predict the next word in the sentence, it only uses a single preceding word. If we could build a model that would remember even just a few of the preceding words there should be an improvement in its performance. To understand why adding memory helps, think of the following example: what words follow the word "drink"? You'd probably say "coffee", "beer", "soda",... If I told you the word sequence was actually "Cows drink", then you would completley change your answer.
+The biggest problem with the simple model is that to predict the next word in the sentence, it only uses a single preceding word. If we could build a model that would remember even just a few of the preceding words there should be an improvement in its performance. To understand why adding memory helps, think of the following example: what words follow the word "drink"? You'd probably say that "coffee", "beer" and "soda" have a high probably of following it. If I told you the word sequence was actually "Cows drink", then you would completley change your answer.
 
 We can add memory to our model by augmenting it with a [recurrent neural network](http://karpathy.github.io/2015/05/21/rnn-effectiveness/) (RNN), as shown below.
 
@@ -43,7 +43,7 @@ _rnn model_
 
 
 
-This model is just like the simple one, just that after encoding the current input word we feed the resulting representation (of size `200`) into a two layer [LSTM](http://colah.github.io/posts/2015-08-Understanding-LSTMs/), which then outputs a vector also of size `200` (at every timestep the LSTM also recieved a vector of size `200` representing it's previous state). Then, just like before, we use the decoder to convert this vector into a vector of probability values. (LSTM is just a fancier RNN that is better at remembering the past. Its "API" is identical to the "API" of an RNN- the LSTM recieves an input at each timestep and its previous state, and uses those two inputs to compute an updated state).
+This model is just like the simple one, just that after encoding the current input word we feed the resulting representation (of size `200`) into a two layer [LSTM](http://colah.github.io/posts/2015-08-Understanding-LSTMs/), which then outputs a vector also of size `200` (at every timestep the LSTM also recieved a vector of size `200` representing it's previous state). Then, just like before, we use the decoder to convert this vector into a vector of probability values. (LSTM is just a fancier RNN that is better at remembering the past. Its "API" is identical to the "API" of an RNN- the LSTM recieves an input at each timestep and its previous state, and uses those two inputs to compute an updated state.)
 
 Now we have a model that at each time step gets not only the current word representation, but also the state of the LSTM from the previous time step, and uses this to predict the next word. The state of the LSTM is a representation of the previously seen words (note that words that we saw recently have a much larger impact on this state then words we saw a while ago). 
 As expected, performance improves and the perplexity of this model on the test set is about `114`. An implementation of this model[^zaremba], along with a detailed explanation, is available in [Tensorflow](https://www.tensorflow.org/tutorials/recurrent).
@@ -73,10 +73,11 @@ _variational do_
 
 ### Weight Tying 
 
-An RNN based language model consists of three components: the input embedding (the "encoder"), the RNN (the "processor"), and an output embedding, which in conjuction with a softmax layer is the "decoder". (I refer to the RNN component as a "processor" because at every time step it recieves a representation of the current word and a representation of all words seen until now (the previous hidden state) and outputs a vector representing its belief about the next word). 
+An RNN based language model consists of three components: the input embedding (the "encoder"), the RNN (the "processor"), and an output embedding, which in conjuction with a softmax layer is the "decoder". (The RNN component can be seen as a "processor" because at every time step it recieves a representation of the current word and a representation of all words seen until now (the previous hidden state) and outputs a vector representing its belief about the next word). 
 
-The input embedding and output embedding have a few properties in common. The first property they share is that they are both of the same size (in our simple RNN model they are both of size `(10000,200)`
-motivation
+The input embedding and output embedding have a few properties in common. The first property they share is that they are both of the same size (in our simple RNN model they are both of size `(10000,200)`. 
+The second property is as follows. In the input embedding, words that have similar meanings are represented by similar vectors (similar in terms of [cosine similarity](https://en.wikipedia.org/wiki/Cosine_similarity#Definition)). This is because the model learns that it needs to react to similar words in a similar fashion.
+This also occurs in the output embedding. The output embedding recieves a representation of the "processor"'s belief about the next output word and has to translate this into a distribution. Given the representation from the "processor", the probability that the decoder assigns a word depends mostly on its representation in the output embedding (the probablility is exactly the dot product of this representation and the output of the processor that is normalized by the softmax layer). 
 
 wt
 
