@@ -33,17 +33,17 @@ For the `(input, target-output)` word pairs we use the Penn Treebank dataset whi
 The metric used for reporting the performance of a language model is its perplexity on the test set. It is defined as- $$e^{-\frac{1}{N}\sum_{i=1}^{N} \ln p_{\text{target}_i}}  $$, where $$p_{\text{target}_i}$$ is the probability given by the model to the target word at iteration 'i'. Perplexity is a decreasing function of the average log probability that the model assigns to the target word at every iteration. We want to maximize the probability that we give to the target word at every iteration, which means that we want to minimize the perplexity (the optimal perplexity is `1`).  
 The perplexity for the simple model[^sg] is about `183` on the test set, which means that on average it assigns a probability of about $$ 0.005$$  to the target word in every iteration on the test set. Its much better than just a random guess (which would assign a probability of $$\frac {1} {N} = \frac {1} {10,000} = 0.0001$$ to the correct word), but we can do much better.
 
-
+ 
 ## Using RNNs to improve performance
 The biggest problem with the simple model is that to predict the next word in the sentence, it only uses a single preceding word. If we could build a model that would remember even just a few of the preceding words there should be an improvement in its performance. To understand why adding memory helps, think of the following example: what words follow the word "drink"? You'd probably say "coffee", "beer", "soda",... If I told you the word sequence was actually "Cows drink", then you would completley change your answer.
 
-We can add memory to our model by augmenting it with a recurrent neural network, as shown below.
+We can add memory to our model by augmenting it with a [recurrent neural network](http://karpathy.github.io/2015/05/21/rnn-effectiveness/) (RNN), as shown below.
 
 _rnn model_
 
 
 
-This model is just like the simple one, just that after encoding the current input word we feed the resulting representation (of size `200`) into a two layer [LSTM](http://colah.github.io/posts/2015-08-Understanding-LSTMs/), which then outputs a vector also of size `200` (at every timestep the LSTM also recieved a vector of size `200` representing it's previous state). Then, just like before, we use the decoder to convert this vector into a vector of probability values. 
+This model is just like the simple one, just that after encoding the current input word we feed the resulting representation (of size `200`) into a two layer [LSTM](http://colah.github.io/posts/2015-08-Understanding-LSTMs/), which then outputs a vector also of size `200` (at every timestep the LSTM also recieved a vector of size `200` representing it's previous state). Then, just like before, we use the decoder to convert this vector into a vector of probability values. (LSTM is just a fancier RNN that is better at remembering the past. Its "API" is identical to the "API" of an RNN- the LSTM recieves an input at each timestep and its previous state, and uses those two inputs to compute an updated state).
 
 Now we have a model that at each time step gets not only the current word representation, but also the state of the LSTM from the previous time step, and uses this to predict the next word. The state of the LSTM is a representation of the previously seen words (note that words that we saw recently have a much larger impact on this state then words we saw a while ago). 
 As expected, performance improves and the perplexity of this model on the test set is about `114`. An implementation of this model[^zaremba], along with a detailed explanation, is available in [Tensorflow](https://www.tensorflow.org/tutorials/recurrent).
@@ -62,7 +62,7 @@ _regular_
 We can apply dropout on the vertical (same time step) connections:
 _vanilla dropout_
 
-The arrows are colored in places were we apply dropout. We use different dropout masks for the different connections. 
+The arrows are colored in places were we apply dropout. We use different dropout masks for the different connections (this is indicated by the different colors in the diagram). 
 
 Applying dropout to the recurrent connections harms the performance, and so in this initial use of dropout we use it only on connections within the same time step. 
 
@@ -70,12 +70,22 @@ A recent dropout modification[^variational] solves this problem and improves the
 
 _variational do_
 
-For example, using variational dropout, the mask used between the connection of and...
 
 ### Weight Tying 
 
-(zoph & le)
+An RNN based language model consists of three components: the input embedding (the "encoder"), the RNN (the "processor"), and an output embedding, which in conjuction with a softmax layer is the "decoder". (I refer to the RNN component as a "processor" because at every time step it recieves a representation of the current word and a representation of all words seen until now (the previous hidden state) and outputs a vector representing its belief about the next word). 
 
+The input embedding and output embedding have a few properties in common. The first property they share is that they are both of the same size (in our simple RNN model they are both of size `(10000,200)`
+motivation
+
+wt
+
+why it works
+
+-
+(zoph & le)
+-
+questions-db
 [^sg]: This model is the skip-gram word2vec model presented in []() 
 [^zaremba]: This model is the small model presented in [Regularizing (Zaremba et. al. 2014)]()
 [^variational]: yarin papers
