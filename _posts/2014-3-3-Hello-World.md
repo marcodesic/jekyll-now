@@ -87,6 +87,8 @@ why it works
 (zoph & le)
 -
 questions-db
-[^sg]: This model is the skip-gram word2vec model presented in []() 
-[^zaremba]: This model is the small model presented in [Regularizing (Zaremba et. al. 2014)]()
+
+
+[^sg]: This model is the skip-gram word2vec model presented in 
+[^zaremba]: This model is the small model presented in [Regularizing (Zaremba et. al. 2014)](asdfasdf)
 [^variational]: yarin papers
