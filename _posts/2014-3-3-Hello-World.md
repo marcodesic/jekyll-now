@@ -89,6 +89,22 @@ why it works
 questions-db
 
 
+
+
+… are both of size 10000,200, meaning that in both matrices, each word has a representation of size 200. 
+The second shared property of these matrices is that in each matrix (independent of the other), similar words are represented by similar vectors (by similar vectors we mean low cosine distance).  
+In the input embedding, this happens because the model learns that it needs to react to similar words in a similar fashion (the words that follow the word "quick" are similar to the ones that follow the word "rapid"). This also occurs in the output embedding. The output embedding receives a representation of the “processor”’s belief about the next output word (the output of the RNN) and has to translate this into a distribution. Given the output of the “processor”, the probability that the decoder assigns a word depends mostly on its representation in the output embedding (the probability is exactly the softmax normalized dot product of this representation and the output of the "processor"). Because the model would like to, given the RNN output, assign similar probability values to similar words, similar words are represented by similar vectors. (Again, if, given a certain RNN output, the probability for the word "quick" is relatively high, we would also expect the probability for the word "rapid" to be relatively high).
+<be consistent with "rnn output"/ "processor output">
+
+These two similarities lead us to propose recently a very simple method to lower the model's parameters and improve its performance. We simply tie its input and output embedding (i.e. we set U=V, meaning that we now have a single embedding matrix that is used both as an input and output embedding).
+<put results here, also maybe change all results to be for networks with lstm layer of size 1500>
+
+Why does weight tying work?
+Two reasons:
+<talk about need for regularization, test prep much higher then train--> overfilling, so less capacity>
+<we discovered that the quality of the embeddings in input much worse than output>
+
+
 [^sg]: This model is the skip-gram word2vec model presented in 
 [^zaremba]: This model is the small model presented in [Regularizing (Zaremba et. al. 2014)](asdfasdf)
 [^variational]: yarin papers
