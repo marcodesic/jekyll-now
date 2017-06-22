@@ -64,22 +64,23 @@ _vanilla dropout_
 
 The arrows are colored in places were we apply dropout. We use different dropout masks for the different connections (this is indicated by the different colors in the diagram). 
 
-Applying dropout to the recurrent connections harms the performance, and so in this initial use of dropout we use it only on connections within the same time step. 
+Applying dropout to the recurrent connections harms the performance, and so in this initial use of dropout we use it only on connections within the same time step. Using two LSTM layers, with each layer containing `1500` LSTM units, we acheive a perplexity of `78`. 
 
-A recent dropout modification[^variational] solves this problem and improves the model's performance even more by using the same dropout masks at each time step. 
+A recent dropout modification[^variational] solves this problem and improves the model's performance even more (to `75` perplexity) by using the same dropout masks at each time step. 
 
 _variational do_
+
 
 
 ### Weight Tying 
 
 An RNN based language model consists of three components: the input embedding (the "encoder"), the RNN (the "processor"), and an output embedding, which in conjuction with a softmax layer is the "decoder". (The RNN component can be seen as a "processor" because at every time step it recieves a representation of the current word and a representation of all words seen until now (the previous hidden state) and outputs a vector representing its belief about the next word). 
 
-The input embedding and output embedding have a few properties in common. The first property they share is that they are both of the same size (in our simple RNN model they are both of size `(10000,200)`. 
-The second property is as follows. In the input embedding, words that have similar meanings are represented by similar vectors (similar in terms of [cosine similarity](https://en.wikipedia.org/wiki/Cosine_similarity#Definition)). This is because the model learns that it needs to react to similar words in a similar fashion.
-This also occurs in the output embedding. The output embedding recieves a representation of the "processor"'s belief about the next output word and has to translate this into a distribution. Given the representation from the "processor", the probability that the decoder assigns a word depends mostly on its representation in the output embedding (the probablility is exactly the dot product of this representation and the output of the processor that is normalized by the softmax layer). 
+The input embedding and output embedding have a few properties in common. The first property they share is that they are both of the same size (in our RNN model with dropout they are both of size `(10000,1500)`). 
+The second property is that in the input embedding, words that have similar meanings are represented by similar vectors (similar in terms of [cosine similarity](https://en.wikipedia.org/wiki/Cosine_similarity#Definition)). This is because the model learns that it needs to react to similar words in a similar fashion.
+This also occurs in the output embedding. The output embedding recieves a representation of the "processor"'s belief about the next output word and has to transform this into a distribution. Given the representation from the "processor", the probability that the decoder assigns a word depends mostly on its representation in the output embedding (the probablility is exactly the dot product of this representation and the output of the processor after normalization by the softmax layer). 
 
-wt
+
 
 why it works
 
@@ -91,18 +92,22 @@ questions-db
 
 
 
-… are both of size 10000,200, meaning that in both matrices, each word has a representation of size 200. 
+… are both of size 10000,1500, meaning that in both matrices, each word has a representation of size 200. 
 The second shared property of these matrices is that in each matrix (independent of the other), similar words are represented by similar vectors (by similar vectors we mean low cosine distance).  
 In the input embedding, this happens because the model learns that it needs to react to similar words in a similar fashion (the words that follow the word "quick" are similar to the ones that follow the word "rapid"). This also occurs in the output embedding. The output embedding receives a representation of the “processor”’s belief about the next output word (the output of the RNN) and has to translate this into a distribution. Given the output of the “processor”, the probability that the decoder assigns a word depends mostly on its representation in the output embedding (the probability is exactly the softmax normalized dot product of this representation and the output of the "processor"). Because the model would like to, given the RNN output, assign similar probability values to similar words, similar words are represented by similar vectors. (Again, if, given a certain RNN output, the probability for the word "quick" is relatively high, we would also expect the probability for the word "rapid" to be relatively high).
 <be consistent with "rnn output"/ "processor output">
 
-These two similarities lead us to propose recently a very simple method to lower the model's parameters and improve its performance. We simply tie its input and output embedding (i.e. we set U=V, meaning that we now have a single embedding matrix that is used both as an input and output embedding).
-<put results here, also maybe change all results to be for networks with lstm layer of size 1500>
+These two similarities lead us to propose a very simple method to lower the model's parameters and improve its performance. We simply tie its input and output embedding (i.e. we set U=V, meaning that we now have a single embedding matrix that is used both as an input and output embedding). This reduces the perplexity of the RNN model that uses dropout to `73`, and its size is reduced by more than 20%. 
+
 
 Why does weight tying work?
 Two reasons:
 <talk about need for regularization, test prep much higher then train--> overfilling, so less capacity>
 <we discovered that the quality of the embeddings in input much worse than output>
+1. While training language models, it is important to monitor not only the perplexity on the test set but also the perplexity on the train set. 
+<perpleixy table , with without WT, for train and test>
+2. 
+
 
 
 [^sg]: This model is the skip-gram word2vec model presented in 
