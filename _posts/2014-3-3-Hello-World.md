@@ -72,7 +72,7 @@ The diagram below is a visualization of the RNN based model unrolled across thre
 We can apply dropout on the vertical (same time step) connections:
 
 <div class="imgcap">
-<img src="/images/lm/regular_dropout">
+<img src="/images/lm/regular_dropout.svg">
 </div>
 
 The arrows are colored in places were we apply dropout. We use different dropout masks for the different connections (this is indicated by the different colors in the diagram). 
