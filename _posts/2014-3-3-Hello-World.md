@@ -105,14 +105,14 @@ These two similarities lead us to recently propose a very simple method, [weight
 
 #### Why does weight tying work?
 
-The perplexity of the vanilla RNN language model on the test set is XX. The same model achieves <YY> perplexity on the training set. So the model performs much better on the training set then it does on the test set. This means that it has started to learn certain patterns or sequences that occur only in the train set and do not help the model to generalize to unseen data. One of the ways to counter this overfitting is to reduce the models ability to 'memorize' by reducing its capacity (number of parameters). By applying weight tying, we remove a large number of parameters. 
+The perplexity of the vanilla RNN language model on the test set is todo:XX. The same model achieves todo:YY perplexity on the training set. So the model performs much better on the training set then it does on the test set. This means that it has started to learn certain patterns or sequences that occur only in the train set and do not help the model to generalize to unseen data. One of the ways to counter this overfitting is to reduce the models ability to 'memorize' by reducing its capacity (number of parameters). By applying weight tying, we remove a large number of parameters. 
 
 In addition to regularizing effect of weight tying we presented another reason for the improved results. We showed that the word representations in the output embedding are of much higher quality than the ones in the input embedding. This is shown using embedding evaluation benchmarks such as [Simlex999](https://www.cl.cam.ac.uk/~fh295/simlex.html). In the weight tied model, because the tied embedding's parameter updates at each training iteration are very similar to the updates of the output embedding in the untied model, the tied embedding performs similarly to the output embedding of the untied model. So in the untied model, we use a single high quality embedding matrix in two places in the model. This contributes to the improved performance of the tied model[^paper]. 
 
 
 To summarize, we showed how to improve a very simple feedforward neural network language model, by first adding an RNN, and then adding variational dropout and weight tying.
 
-In recent months, we've seen further improvements to the state of the art in RNN language modeling. The current state of the art results are held by <deepmind> and <stephen> . These models make use of most, if not all, of the methods shown above, and extend them by using better optimizations techniques, new regularization methods, and by finding better hyperparameters for existing models. Some of these methods will be presented in part two of this guide, which will be posted soon. 
+In recent months, we've seen further improvements to the state of the art in RNN language modeling. The current state of the art results are held by todo:<deepmind> and todo:<stephen> . These models make use of most, if not all, of the methods shown above, and extend them by using better optimizations techniques, new regularization methods, and by finding better hyperparameters for existing models. Some of these methods will be presented in part two of this guide, which will be posted soon. 
 
 Feel free to ask questions in the comments bellow. 
   
