@@ -66,13 +66,13 @@ We could try improving the network by increasing the size of the embeddings and 
 The diagram below is a visualization of the RNN based model unrolled across three time steps. `x` and `y` are the input and output sequences, and the grey boxes represent the LSTM layers. Vertical arrows represent an input to the layer that is from the same time step, and horizontal arrows represent connections that carry information from previous time steps. 
 
 <div class="imgcap">
-<img src="/images/lm/no_dropout.png">
+<img src="/images/lm/no_dropout.svg">
 </div>
 
 We can apply dropout on the vertical (same time step) connections:
 
 <div class="imgcap">
-<img src="/images/lm/regular_dropout.png">
+<img src="/images/lm/regular_dropout.svg">
 </div>
 
 The arrows are colored in places were we apply dropout. We use different dropout masks for the different connections (this is indicated by the different colors in the diagram). 
@@ -82,7 +82,7 @@ Applying dropout to the recurrent connections harms the performance, and so in t
 A recent [dropout modification](https://arxiv.org/abs/1512.05287) solves this problem and improves the model's performance even more (to `75` perplexity) by using the same dropout masks at each time step. 
 
 <div class="imgcap">
-<img src="/images/lm/variational_dropout.png">
+<img src="/images/lm/variational_dropout.svg">
 </div>
 
 
