@@ -1,6 +1,6 @@
 ---
 layout: post
-title: draft, has to be spellchecked. 
+title: Neural Language Modeling From Scratch (Part 1)
 mathjax: true
 ---
 
@@ -48,7 +48,7 @@ This model is just like the simple one, just that after encoding the current inp
 Now we have a model that at each time step gets not only the current word representation, but also the state of the LSTM from the previous time step, and uses this to predict the next word. The state of the LSTM is a representation of the previously seen words (note that words that we saw recently have a much larger impact on this state then words we saw a while ago). 
 As expected, performance improves and the perplexity of this model on the test set is about `114`. An implementation of this model[^zaremba], along with a detailed explanation, is available in [Tensorflow](https://www.tensorflow.org/tutorials/recurrent).
 
-## Reaching the state of the art
+## The importance of regularization. 
 `114` perplexity is good but we can still do much better. In this section I'll present some recent advances that improve the performance of RNN based language models. 
 
 ### Dropout
@@ -66,7 +66,7 @@ The arrows are colored in places were we apply dropout. We use different dropout
 
 Applying dropout to the recurrent connections harms the performance, and so in this initial use of dropout we use it only on connections within the same time step. Using two LSTM layers, with each layer containing `1500` LSTM units, we acheive a perplexity of `78`. 
 
-A recent dropout modification[^variational] solves this problem and improves the model's performance even more (to `75` perplexity) by using the same dropout masks at each time step. 
+A recent [dropout modification](https://arxiv.org/abs/1512.05287) solves this problem and improves the model's performance even more (to `75` perplexity) by using the same dropout masks at each time step. 
 
 _variational do_
 
@@ -100,6 +100,5 @@ Feel free to ask questions in the comments bellow.
 
 
 
-[^sg]: This model is the skip-gram word2vec model presented in 
-[^zaremba]: This model is the small model presented in [Regularizing (Zaremba et. al. 2014)](asdfasdf)
-[^variational]: yarin papers
+[^sg]: This model is the skip-gram word2vec model presented in [Efficient Estimation of Word Representations in Vector Space](https://arxiv.org/abs/1301.3781).
+[^zaremba]: This model is the small model presented in [Recurrent Neural Network Regularization](https://arxiv.org/abs/1409.2329).
