@@ -1,6 +1,6 @@
 ---
 layout: post
-title: draft, has to be spellchecked.
+title: draft, has to be spellchecked. 
 mathjax: true
 ---
 
@@ -77,30 +77,16 @@ _variational do_
 An RNN based language model consists of three components: the input embedding (the "encoder"), the RNN (the "processor"), and an output embedding, which in conjuction with a softmax layer is the "decoder". (The RNN component can be seen as a "processor" because at every time step it recieves a representation of the current word and a representation of all words seen until now (the previous hidden state) and outputs a vector representing its belief about the next word). 
 
 The input embedding and output embedding have a few properties in common. The first property they share is that they are both of the same size (in our RNN model with dropout they are both of size `(10000,1500)`). 
-The second property is that in the input embedding, words that have similar meanings are represented by similar vectors (similar in terms of [cosine similarity](https://en.wikipedia.org/wiki/Cosine_similarity#Definition)). This is because the model learns that it needs to react to similar words in a similar fashion.
-This also occurs in the output embedding. The output embedding recieves a representation of the "processor"'s belief about the next output word and has to transform this into a distribution. Given the representation from the "processor", the probability that the decoder assigns a word depends mostly on its representation in the output embedding (the probablility is exactly the dot product of this representation and the output of the processor after normalization by the softmax layer). 
+The second property is that in the input embedding, words that have similar meanings are represented by similar vectors (similar in terms of [cosine similarity](https://en.wikipedia.org/wiki/Cosine_similarity#Definition)). This is because the model learns that it needs to react to similar words in a similar fashion (the words that follow the word "quick" are similar to the ones that follow the word "rapid").
+This also occurs in the output embedding. The output embedding recieves a representation of the "processor"'s belief about the next output word (the output of the RNN) and has to transform this into a distribution. Given the representation from the "processor", the probability that the decoder assigns a word depends mostly on its representation in the output embedding (the probability is exactly the softmax normalized dot product of this representation and the output of the "processor"). 
 
-
-
-why it works
-
--
-(zoph & le)
--
-questions-db
-
-
-
-
-… are both of size 10000,1500, meaning that in both matrices, each word has a representation of size 200. 
-The second shared property of these matrices is that in each matrix (independent of the other), similar words are represented by similar vectors (by similar vectors we mean low cosine distance).  
-In the input embedding, this happens because the model learns that it needs to react to similar words in a similar fashion (the words that follow the word "quick" are similar to the ones that follow the word "rapid"). This also occurs in the output embedding. The output embedding receives a representation of the “processor”’s belief about the next output word (the output of the RNN) and has to translate this into a distribution. Given the output of the “processor”, the probability that the decoder assigns a word depends mostly on its representation in the output embedding (the probability is exactly the softmax normalized dot product of this representation and the output of the "processor"). Because the model would like to, given the RNN output, assign similar probability values to similar words, similar words are represented by similar vectors. (Again, if, given a certain RNN output, the probability for the word "quick" is relatively high, we would also expect the probability for the word "rapid" to be relatively high).
+Because the model would like to, given the RNN output, assign similar probability values to similar words, similar words are represented by similar vectors. (Again, if, given a certain RNN output, the probability for the word "quick" is relatively high, we would also expect the probability for the word "rapid" to be relatively high).
 <be consistent with "rnn output"/ "processor output">
 
 These two similarities lead us to propose a very simple method to lower the model's parameters and improve its performance. We simply tie its input and output embedding (i.e. we set U=V, meaning that we now have a single embedding matrix that is used both as an input and output embedding). This reduces the perplexity of the RNN model that uses dropout to `73`, and its size is reduced by more than 20%. 
 
 
-WWhy does weight tying work?
+Why does weight tying work?
 Two reasons:
 The perplexity of the vanilla RNN language model on the test set is XX. The same model achieves <YY> perplexity on the training set. So the model performs much better on the training set then it does on the test set. This means that it has started to learn certain patterns or sequences that occur only in the train set and do not help the model to generalize to unseen data. One of the ways to counter this overfitting is to reduce the models ability to 'memorize' by reducing its capacity (number of parameters). By applying weight tying, we remove a large number of parameters. 
 The second reason is a bit more subtle. In our paper we show that the word representations in the output embedding are of much higher quality than the ones in the input embedding. This is shown using embedding evaluation benchmarks such as Simlex999<link>. In the weight tied model, because the tied embedding's parameter updates at each training iteration are very similar to the updates of the output embedding in the untied model, the tied embedding performs similarly to the output embedding of the untied model. So in the untied model, we use a single high quality embedding matrix in two places in the model. This contributes to the improved performance of the tied model. (Read the paper for the full explanation) <-- foot note
@@ -109,7 +95,8 @@ The second reason is a bit more subtle. In our paper we show that the word repre
 To summarize, we showed how to improve a very simple feedforward neural network language model, by first adding an RNN, and then adding variational dropout and weight tying.
 In recent months, we've seen further improvements to the state of the art in RNN language modeling. The current state of the art results are held by <blunsom> and <merity> . These models take use most, if not all, of the methods shown above, and extend them by using better optimizations techniques, new regularization methods, and by finding better hyperparameters for existing models. 
 
-<denny britz thank you thing>
+Feel free to ask questions in the comments bellow. 
+
 <maybe add footnote about socher paper>
 
 <talk about need for regularization, test prep much higher then train--> overfilling, so less capacity>
