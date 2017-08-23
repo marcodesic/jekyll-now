@@ -112,7 +112,7 @@ In addition to regularizing effect of weight tying we presented another reason f
 
 To summarize, we showed how to improve a very simple feedforward neural network language model, by first adding an RNN, and then adding variational dropout and weight tying.
 
-In recent months, we've seen further improvements to the state of the art in RNN language modeling. The current state of the art results are held by todo:<deepmind> and todo:<stephen> . These models make use of most, if not all, of the methods shown above, and extend them by using better optimizations techniques, new regularization methods, and by finding better hyperparameters for existing models. Some of these methods will be presented in part two of this guide, which will be posted soon. 
+In recent months, we've seen further improvements to the state of the art in RNN language modeling. The current state of the art results are held by two recent papers by [Melis et al.](https://arxiv.org/abs/1707.05589) and [Merity et al.](https://arxiv.org/abs/1708.02182). These models make use of most, if not all, of the methods shown above, and extend them by using better optimizations techniques, new regularization methods, and by finding better hyperparameters for existing models. Some of these methods will be presented in part two of this guide, which will be posted soon. 
 
 Feel free to ask questions in the comments bellow. 
   
