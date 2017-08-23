@@ -100,13 +100,20 @@ In the input embedding, this happens because the model learns that it needs to r
 These two similarities lead us to propose a very simple method to lower the model's parameters and improve its performance. We simply tie its input and output embedding (i.e. we set U=V, meaning that we now have a single embedding matrix that is used both as an input and output embedding). This reduces the perplexity of the RNN model that uses dropout to `73`, and its size is reduced by more than 20%. 
 
 
-Why does weight tying work?
+WWhy does weight tying work?
 Two reasons:
+The perplexity of the vanilla RNN language model on the test set is XX. The same model achieves <YY> perplexity on the training set. So the model performs much better on the training set then it does on the test set. This means that it has started to learn certain patterns or sequences that occur only in the train set and do not help the model to generalize to unseen data. One of the ways to counter this overfitting is to reduce the models ability to 'memorize' by reducing its capacity (number of parameters). By applying weight tying, we remove a large number of parameters. 
+The second reason is a bit more subtle. In our paper we show that the word representations in the output embedding are of much higher quality than the ones in the input embedding. This is shown using embedding evaluation benchmarks such as Simlex999<link>. In the weight tied model, because the tied embedding's parameter updates at each training iteration are very similar to the updates of the output embedding in the untied model, the tied embedding performs similarly to the output embedding of the untied model. So in the untied model, we use a single high quality embedding matrix in two places in the model. This contributes to the improved performance of the tied model. (Read the paper for the full explanation) <-- foot note
+
+
+To summarize, we showed how to improve a very simple feedforward neural network language model, by first adding an RNN, and then adding variational dropout and weight tying.
+In recent months, we've seen further improvements to the state of the art in RNN language modeling. The current state of the art results are held by <blunsom> and <merity> . These models take use most, if not all, of the methods shown above, and extend them by using better optimizations techniques, new regularization methods, and by finding better hyperparameters for existing models. 
+
+<denny britz thank you thing>
+<maybe add footnote about socher paper>
+
 <talk about need for regularization, test prep much higher then train--> overfilling, so less capacity>
 <we discovered that the quality of the embeddings in input much worse than output>
-1. While training language models, it is important to monitor not only the perplexity on the test set but also the perplexity on the train set. 
-<perpleixy table , with without WT, for train and test>
-2. 
 
 
 
