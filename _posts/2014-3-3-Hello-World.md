@@ -96,7 +96,11 @@ To summarize, we showed how to improve a very simple feedforward neural network 
 In recent months, we've seen further improvements to the state of the art in RNN language modeling. The current state of the art results are held by <blunsom> and <merity> . These models take use most, if not all, of the methods shown above, and extend them by using better optimizations techniques, new regularization methods, and by finding better hyperparameters for existing models. 
 
 Feel free to ask questions in the comments bellow. 
-
+  
+  
+  
+***
+  
 
 
 
