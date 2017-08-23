@@ -72,14 +72,14 @@ The diagram below is a visualization of the RNN based model unrolled across thre
 We can apply dropout on the vertical (same time step) connections:
 
 <div class="imgcap">
-<img src="/images/lm/regular_dropout.svg">
+<img src="/images/lm/regular_dropout">
 </div>
 
 The arrows are colored in places were we apply dropout. We use different dropout masks for the different connections (this is indicated by the different colors in the diagram). 
 
 Applying dropout to the recurrent connections harms the performance, and so in this initial use of dropout we use it only on connections within the same time step. Using two LSTM layers, with each layer containing `1500` LSTM units, we acheive a perplexity of `78`. 
 
-A recent [dropout modification](https://arxiv.org/abs/1512.05287) solves this problem and improves the model's performance even more (to `75` perplexity) by using the same dropout masks at each time step. 
+The recently introduced [variational dropout](https://arxiv.org/abs/1512.05287) solves this problem and improves the model's performance even more (to `75` perplexity) by using the same dropout masks at each time step. 
 
 <div class="imgcap">
 <img src="/images/lm/variational_dropout.svg">
@@ -103,7 +103,7 @@ Because the model would like to, given the RNN output, assign similar probabilit
 These two similarities lead us to propose a very simple method to lower the model's parameters and improve its performance. We simply tie its input and output embedding (i.e. we set U=V, meaning that we now have a single embedding matrix that is used both as an input and output embedding). This reduces the perplexity of the RNN model that uses dropout to `73`, and its size is reduced by more than 20%[^inan]. 
 
 
-Why does weight tying work?
+#### Why does weight tying work?
 Two reasons:
 The perplexity of the vanilla RNN language model on the test set is XX. The same model achieves <YY> perplexity on the training set. So the model performs much better on the training set then it does on the test set. This means that it has started to learn certain patterns or sequences that occur only in the train set and do not help the model to generalize to unseen data. One of the ways to counter this overfitting is to reduce the models ability to 'memorize' by reducing its capacity (number of parameters). By applying weight tying, we remove a large number of parameters. 
 
