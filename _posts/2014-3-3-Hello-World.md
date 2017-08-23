@@ -124,7 +124,7 @@ Feel free to ask questions in the comments bellow.
 
 
 [^sg]: This model is the skip-gram word2vec model presented in [Efficient Estimation of Word Representations in Vector Space](https://arxiv.org/abs/1301.3781).
-[^api]: For a detailed explanation of this watch [Edward Grefenstette's "Beyond Seq2Seq with Augmented RNNs" lecture](http://videolectures.net/deeplearning2016_grefenstette_augmented_rnn/).
+[^api]: For a detailed explanation of this watch Edward Grefenstette's [Beyond Seq2Seq with Augmented RNNs](http://videolectures.net/deeplearning2016_grefenstette_augmented_rnn/) lecture.
 [^inan]: In parallel to our work, an explanation for weight tying based on [Distilling the Knowledge in a Neural Network](https://arxiv.org/abs/1503.02531) was presented in [Tying Word Vectors and Word Classifiers: A Loss Framework for Language Modeling](https://arxiv.org/abs/1611.01462).
 [^zaremba]: This model is the small model presented in [Recurrent Neural Network Regularization](https://arxiv.org/abs/1409.2329).
 [^paper]: Our [paper](https://arxiv.org/abs/1608.05859) explains this in detail.  
