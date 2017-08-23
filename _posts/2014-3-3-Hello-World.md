@@ -98,7 +98,7 @@ The second property is that in the input embedding, words that have similar mean
 This also occurs in the output embedding. The output embedding recieves a representation of the "processor"'s belief about the next output word (the output of the RNN) and has to transform this into a distribution. Given the representation from the "processor", the probability that the decoder assigns a word depends mostly on its representation in the output embedding (the probability is exactly the softmax normalized dot product of this representation and the output of the "processor"). 
 
 Because the model would like to, given the RNN output, assign similar probability values to similar words, similar words are represented by similar vectors. (Again, if, given a certain RNN output, the probability for the word "quick" is relatively high, we would also expect the probability for the word "rapid" to be relatively high).
-<be consistent with "rnn output"/ "processor output">
+
 
 These two similarities lead us to recently propose a very simple method, [weight tying](https://arxiv.org/abs/1608.05859), to lower the model's parameters and improve its performance. We simply tie its input and output embedding (i.e. we set U=V, meaning that we now have a single embedding matrix that is used both as an input and output embedding). This reduces the perplexity of the RNN model that uses dropout to `73`, and its size is reduced by more than 20%[^inan]. 
 
