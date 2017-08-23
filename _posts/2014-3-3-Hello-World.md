@@ -100,19 +100,19 @@ This also occurs in the output embedding. The output embedding recieves a repres
 Because the model would like to, given the RNN output, assign similar probability values to similar words, similar words are represented by similar vectors. (Again, if, given a certain RNN output, the probability for the word "quick" is relatively high, we would also expect the probability for the word "rapid" to be relatively high).
 <be consistent with "rnn output"/ "processor output">
 
-These two similarities lead us to propose a very simple method to lower the model's parameters and improve its performance. We simply tie its input and output embedding (i.e. we set U=V, meaning that we now have a single embedding matrix that is used both as an input and output embedding). This reduces the perplexity of the RNN model that uses dropout to `73`, and its size is reduced by more than 20%[^inan]. 
+These two similarities lead us to recently propose a very simple method, [weight tying](https://arxiv.org/abs/1608.05859), to lower the model's parameters and improve its performance. We simply tie its input and output embedding (i.e. we set U=V, meaning that we now have a single embedding matrix that is used both as an input and output embedding). This reduces the perplexity of the RNN model that uses dropout to `73`, and its size is reduced by more than 20%[^inan]. 
 
 
 #### Why does weight tying work?
-Two reasons:
+
 The perplexity of the vanilla RNN language model on the test set is XX. The same model achieves <YY> perplexity on the training set. So the model performs much better on the training set then it does on the test set. This means that it has started to learn certain patterns or sequences that occur only in the train set and do not help the model to generalize to unseen data. One of the ways to counter this overfitting is to reduce the models ability to 'memorize' by reducing its capacity (number of parameters). By applying weight tying, we remove a large number of parameters. 
 
-The second reason is a bit more subtle. In our paper we show that the word representations in the output embedding are of much higher quality than the ones in the input embedding. This is shown using embedding evaluation benchmarks such as Simlex999<link>. In the weight tied model, because the tied embedding's parameter updates at each training iteration are very similar to the updates of the output embedding in the untied model, the tied embedding performs similarly to the output embedding of the untied model. So in the untied model, we use a single high quality embedding matrix in two places in the model. This contributes to the improved performance of the tied model. (Read the paper for the full explanation) <-- foot note
+In addition to regularizing effect of weight tying we presented another reason for the improved results. We showed that the word representations in the output embedding are of much higher quality than the ones in the input embedding. This is shown using embedding evaluation benchmarks such as [Simlex999](https://www.cl.cam.ac.uk/~fh295/simlex.html). In the weight tied model, because the tied embedding's parameter updates at each training iteration are very similar to the updates of the output embedding in the untied model, the tied embedding performs similarly to the output embedding of the untied model. So in the untied model, we use a single high quality embedding matrix in two places in the model. This contributes to the improved performance of the tied model[^paper]. 
 
 
 To summarize, we showed how to improve a very simple feedforward neural network language model, by first adding an RNN, and then adding variational dropout and weight tying.
 
-In recent months, we've seen further improvements to the state of the art in RNN language modeling. The current state of the art results are held by <blunsom> and <merity> . These models take use most, if not all, of the methods shown above, and extend them by using better optimizations techniques, new regularization methods, and by finding better hyperparameters for existing models. 
+In recent months, we've seen further improvements to the state of the art in RNN language modeling. The current state of the art results are held by <deepmind> and <stephen> . These models make use of most, if not all, of the methods shown above, and extend them by using better optimizations techniques, new regularization methods, and by finding better hyperparameters for existing models. Some of these methods will be presented in part two of this guide, which will be posted soon. 
 
 Feel free to ask questions in the comments bellow. 
   
@@ -124,6 +124,7 @@ Feel free to ask questions in the comments bellow.
 
 
 [^sg]: This model is the skip-gram word2vec model presented in [Efficient Estimation of Word Representations in Vector Space](https://arxiv.org/abs/1301.3781).
-[^api]: For a detailed explanation of this watch [Edward Grefenstette's "Beyond Seq2Seq with Augmented RNNs" lecture.](http://videolectures.net/deeplearning2016_grefenstette_augmented_rnn/) 
+[^api]: For a detailed explanation of this watch [Edward Grefenstette's "Beyond Seq2Seq with Augmented RNNs" lecture].(http://videolectures.net/deeplearning2016_grefenstette_augmented_rnn/) 
 [^inan]: In parallel to our work, an explanation for weight tying based on [Distilling the Knowledge in a Neural Network](https://arxiv.org/abs/1503.02531) was presented in [Tying Word Vectors and Word Classifiers: A Loss Framework for Language Modeling](https://arxiv.org/abs/1611.01462).
 [^zaremba]: This model is the small model presented in [Recurrent Neural Network Regularization](https://arxiv.org/abs/1409.2329).
+[^paper]: Our [paper](https://arxiv.org/abs/1608.05859) explains this in detail.  
