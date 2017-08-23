@@ -4,22 +4,24 @@ title: Neural Language Modeling From Scratch (Part 1)
 mathjax: true
 ---
 
-Language models assign probabilities to word sequences. Those three words that appear right above your keyboard on your phone that try to predict the next word you’ll type are one of the uses of language modeling. In the case shown below, the language model is predicting that “in”, “is” and “to” have a high probability of being the next word in the given sentence. Internally, for each word in its’ vocabulary, the language model computes the probability that it will be the next word, but the user only gets to see the top three most probable words.  
+Language models assign probabilities to word sequences. Those three words that appear right above your keyboard on your phone that try to predict the next word you’ll type are one of the uses of language modeling. In the case shown below, the language model is predicting that “from”, “on” and “it” have a high probability of being the next word in the given sentence. Internally, for each word in its’ vocabulary, the language model computes the probability that it will be the next word, but the user only gets to see the top three most probable words.  
 
 <div class="imgcap">
 <img src="/images/lm/keyboard.png">
 </div>
 
-Language models are a fundamental part of many systems that attempt to solve hard natural language processing tasks such as machine translation and speech recognition. 
+Language models are a fundamental part of many systems that attempt to solve natural language processing tasks such as machine translation and speech recognition. 
 
-The first part of this post presents a simple feedforward neural network that solves this task. In the second part of the post, we will improve the simple model by adding to it a recurrent neural network (RNN). The final part will discuss two recently proposed techniques for improving RNN based language models, which are currently used to obtain state of the art results.
+The first part of this post presents a simple feedforward neural network that solves this task. In the second part of the post, we will improve the simple model by adding to it a recurrent neural network (RNN). The final part will discuss two recently proposed regularization techniques for improving RNN based language models.
 
 
 ## A simple model
 
 To begin we will build a simple model that given a single word taken from some sentence tries predicting the word following it.
 
-_simple model, remove transpose_
+<div class="imgcap">
+<img src="/images/lm/simple_model.png">
+</div>
 
 We represent words using one-hot vectors: after giving a unique integer ID `n` to each word in our vocabulary, each word is represented as a one dimensional vector of the size of the vocabulary (`N`), which is set to `0` everywhere except for a single `1` at element `n`. 
 
@@ -44,9 +46,9 @@ The biggest problem with the simple model is that to predict the next word in th
 
 We can add memory to our model by augmenting it with a [recurrent neural network](http://karpathy.github.io/2015/05/21/rnn-effectiveness/) (RNN), as shown below.
 
-_rnn model_
-
-
+<div class="imgcap">
+<img src="/images/lm/rnn_model.png">
+</div>
 
 This model is just like the simple one, just that after encoding the current input word we feed the resulting representation (of size `200`) into a two layer [LSTM](http://colah.github.io/posts/2015-08-Understanding-LSTMs/), which then outputs a vector also of size `200` (at every timestep the LSTM also recieved a vector of size `200` representing it's previous state). Then, just like before, we use the decoder to convert this vector into a vector of probability values. (LSTM is just a fancier RNN that is better at remembering the past. Its "API" is identical to the "API" of an RNN- the LSTM at each time step an input and its previous state, and uses those two inputs to compute an updated state and an output vector[^api].)
 
@@ -63,10 +65,15 @@ We could try improving the network by increasing the size of the embeddings and 
 
 The diagram below is a visualization of the RNN based model unrolled across three time steps. `x` and `y` are the input and output sequences, and the grey boxes represent the LSTM layers. Vertical arrows represent an input to the layer that is from the same time step, and horizontal arrows represent connections that carry information from previous time steps. 
 
-_regular_
+<div class="imgcap">
+<img src="/images/lm/no_dropout.png">
+</div>
 
 We can apply dropout on the vertical (same time step) connections:
-_vanilla dropout_
+
+<div class="imgcap">
+<img src="/images/lm/regular_dropout.png">
+</div>
 
 The arrows are colored in places were we apply dropout. We use different dropout masks for the different connections (this is indicated by the different colors in the diagram). 
 
@@ -74,7 +81,9 @@ Applying dropout to the recurrent connections harms the performance, and so in t
 
 A recent [dropout modification](https://arxiv.org/abs/1512.05287) solves this problem and improves the model's performance even more (to `75` perplexity) by using the same dropout masks at each time step. 
 
-_variational do_
+<div class="imgcap">
+<img src="/images/lm/variational_dropout.png">
+</div>
 
 
 
@@ -91,7 +100,7 @@ This also occurs in the output embedding. The output embedding recieves a repres
 Because the model would like to, given the RNN output, assign similar probability values to similar words, similar words are represented by similar vectors. (Again, if, given a certain RNN output, the probability for the word "quick" is relatively high, we would also expect the probability for the word "rapid" to be relatively high).
 <be consistent with "rnn output"/ "processor output">
 
-These two similarities lead us to propose a very simple method to lower the model's parameters and improve its performance. We simply tie its input and output embedding (i.e. we set U=V, meaning that we now have a single embedding matrix that is used both as an input and output embedding). This reduces the perplexity of the RNN model that uses dropout to `73`, and its size is reduced by more than 20%. 
+These two similarities lead us to propose a very simple method to lower the model's parameters and improve its performance. We simply tie its input and output embedding (i.e. we set U=V, meaning that we now have a single embedding matrix that is used both as an input and output embedding). This reduces the perplexity of the RNN model that uses dropout to `73`, and its size is reduced by more than 20%[^inan]. 
 
 
 Why does weight tying work?
@@ -116,4 +125,5 @@ Feel free to ask questions in the comments bellow.
 
 [^sg]: This model is the skip-gram word2vec model presented in [Efficient Estimation of Word Representations in Vector Space](https://arxiv.org/abs/1301.3781).
 [^api]: For a detailed explanation of this watch [Edward Grefenstette's "Beyond Seq2Seq with Augmented RNNs" lecture.](http://videolectures.net/deeplearning2016_grefenstette_augmented_rnn/) 
+[^inan]: In parallel to our work, an explanation for weight tying based on [Distilling the Knowledge in a Neural Network](https://arxiv.org/abs/1503.02531) was presented in [Tying Word Vectors and Word Classifiers: A Loss Framework for Language Modeling](https://arxiv.org/abs/1611.01462).
 [^zaremba]: This model is the small model presented in [Recurrent Neural Network Regularization](https://arxiv.org/abs/1409.2329).
