@@ -97,10 +97,6 @@ In recent months, we've seen further improvements to the state of the art in RNN
 
 Feel free to ask questions in the comments bellow. 
 
-<maybe add footnote about socher paper>
-
-<talk about need for regularization, test prep much higher then train--> overfilling, so less capacity>
-<we discovered that the quality of the embeddings in input much worse than output>
 
 
 
