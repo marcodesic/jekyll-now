@@ -6,7 +6,9 @@ mathjax: true
 
 Language models assign probabilities to word sequences. Those three words that appear right above your keyboard on your phone that try to predict the next word you’ll type are one of the uses of language modeling. In the case shown below, the language model is predicting that “in”, “is” and “to” have a high probability of being the next word in the given sentence. Internally, for each word in its’ vocabulary, the language model computes the probability that it will be the next word, but the user only gets to see the top three most probable words.  
 
-![Keyboard](/images/lm/keyboard.png "Keyboard")
+<div class="imgcap">
+<img src="/images/lm/keyboard.png">
+</div>
 
 Language models are a fundamental part of many systems that attempt to solve hard natural language processing tasks such as machine translation and speech recognition. 
 
