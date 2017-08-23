@@ -24,6 +24,7 @@ The model can be seperated into two components:
 * We start by **encoding** the input word. This is done by taking the one hot vector representing the input word, and multiplying it by a matrix of size `(N,200)` which we call the input embedding (`U`). This multiplication results in a vector of size `200`, which is also referred to as a word embedding. This embedding is a dense representation of the current input word. This representation is both of a much smaller size then the one-hot vector representing the same word, and also has some other interesting properties. For example, while the distance between every two words represented by a one-hot vectors is always the same, these dense representations have the property that words that are close in meaning will have representations that are close in the embedding space.
 
 * The second component can be seen as a **decoder**. After the encoding step, we have a representation of the input word. We multiply it by a matrix of size `(200,N)`, which we call the output embedding (`V`).  The resulting vector of size `N` is then passed through the softmax function, normalizing its values into a probability distribution (meaning each one of the values is between `0` and `1`, and their sum is `1`). 
+
 The decoder is a simple function that takes a representation of the input word and returns a distribution which represents the model's predictions for the next word. 
 
 To train this model we use stochastic gradient descent, and the loss used is the cross-entropy loss. Intuitively, this loss measures the distance between the output distribution predicted by the model and the target distribution at every timestep. The target distribution at each iteration is a one-hot vector representing the current target word. 
@@ -31,6 +32,7 @@ To train this model we use stochastic gradient descent, and the loss used is the
 For the `(input, target-output)` word pairs we use the Penn Treebank dataset which contains around 40K sentences from news articles. To generate word pairs for the model to learn from, we will just take every pair of neighbouring words from the text and use the first one as the input word and the second one as the target output word. So for example for the sentence `“The cat is on the mat”` we will extract the following word pairs for training: `(The, cat)`, `(cat, is)`, `(is, on)`, and so on. The vocabulary of the Penn Treebank dataset contains exactly `10,000` words. 
 
 The metric used for reporting the performance of a language model is its perplexity on the test set. It is defined as- $$e^{-\frac{1}{N}\sum_{i=1}^{N} \ln p_{\text{target}_i}}  $$, where $$p_{\text{target}_i}$$ is the probability given by the model to the target word at iteration 'i'. Perplexity is a decreasing function of the average log probability that the model assigns to the target word at every iteration. We want to maximize the probability that we give to the target word at every iteration, which means that we want to minimize the perplexity (the optimal perplexity is `1`).  
+
 The perplexity for the simple model[^sg] is about `183` on the test set, which means that on average it assigns a probability of about $$ 0.005$$  to the target word in every iteration on the test set. Its much better than just a random guess (which would assign a probability of $$\frac {1} {N} = \frac {1} {10,000} = 0.0001$$ to the correct word), but we can do much better.
 
  
@@ -43,9 +45,10 @@ _rnn model_
 
 
 
-This model is just like the simple one, just that after encoding the current input word we feed the resulting representation (of size `200`) into a two layer [LSTM](http://colah.github.io/posts/2015-08-Understanding-LSTMs/), which then outputs a vector also of size `200` (at every timestep the LSTM also recieved a vector of size `200` representing it's previous state). Then, just like before, we use the decoder to convert this vector into a vector of probability values. (LSTM is just a fancier RNN that is better at remembering the past. Its "API" is identical to the "API" of an RNN[edgrefen dlss footnote]- the LSTM recieves an input at each timestep and its previous state, and uses those two inputs to compute an updated state.)
+This model is just like the simple one, just that after encoding the current input word we feed the resulting representation (of size `200`) into a two layer [LSTM](http://colah.github.io/posts/2015-08-Understanding-LSTMs/), which then outputs a vector also of size `200` (at every timestep the LSTM also recieved a vector of size `200` representing it's previous state). Then, just like before, we use the decoder to convert this vector into a vector of probability values. (LSTM is just a fancier RNN that is better at remembering the past. Its "API" is identical to the "API" of an RNN- the LSTM at each time step an input and its previous state, and uses those two inputs to compute an updated state and an output vector[^api].)
 
 Now we have a model that at each time step gets not only the current word representation, but also the state of the LSTM from the previous time step, and uses this to predict the next word. The state of the LSTM is a representation of the previously seen words (note that words that we saw recently have a much larger impact on this state then words we saw a while ago). 
+
 As expected, performance improves and the perplexity of this model on the test set is about `114`. An implementation of this model[^zaremba], along with a detailed explanation, is available in [Tensorflow](https://www.tensorflow.org/tutorials/recurrent).
 
 ## The importance of regularization. 
@@ -77,7 +80,9 @@ _variational do_
 An RNN based language model consists of three components: the input embedding (the "encoder"), the RNN (the "processor"), and an output embedding, which in conjuction with a softmax layer is the "decoder". (The RNN component can be seen as a "processor" because at every time step it recieves a representation of the current word and a representation of all words seen until now (the previous hidden state) and outputs a vector representing its belief about the next word). 
 
 The input embedding and output embedding have a few properties in common. The first property they share is that they are both of the same size (in our RNN model with dropout they are both of size `(10000,1500)`). 
+
 The second property is that in the input embedding, words that have similar meanings are represented by similar vectors (similar in terms of [cosine similarity](https://en.wikipedia.org/wiki/Cosine_similarity#Definition)). This is because the model learns that it needs to react to similar words in a similar fashion (the words that follow the word "quick" are similar to the ones that follow the word "rapid").
+
 This also occurs in the output embedding. The output embedding recieves a representation of the "processor"'s belief about the next output word (the output of the RNN) and has to transform this into a distribution. Given the representation from the "processor", the probability that the decoder assigns a word depends mostly on its representation in the output embedding (the probability is exactly the softmax normalized dot product of this representation and the output of the "processor"). 
 
 Because the model would like to, given the RNN output, assign similar probability values to similar words, similar words are represented by similar vectors. (Again, if, given a certain RNN output, the probability for the word "quick" is relatively high, we would also expect the probability for the word "rapid" to be relatively high).
@@ -89,10 +94,12 @@ These two similarities lead us to propose a very simple method to lower the mode
 Why does weight tying work?
 Two reasons:
 The perplexity of the vanilla RNN language model on the test set is XX. The same model achieves <YY> perplexity on the training set. So the model performs much better on the training set then it does on the test set. This means that it has started to learn certain patterns or sequences that occur only in the train set and do not help the model to generalize to unseen data. One of the ways to counter this overfitting is to reduce the models ability to 'memorize' by reducing its capacity (number of parameters). By applying weight tying, we remove a large number of parameters. 
+
 The second reason is a bit more subtle. In our paper we show that the word representations in the output embedding are of much higher quality than the ones in the input embedding. This is shown using embedding evaluation benchmarks such as Simlex999<link>. In the weight tied model, because the tied embedding's parameter updates at each training iteration are very similar to the updates of the output embedding in the untied model, the tied embedding performs similarly to the output embedding of the untied model. So in the untied model, we use a single high quality embedding matrix in two places in the model. This contributes to the improved performance of the tied model. (Read the paper for the full explanation) <-- foot note
 
 
 To summarize, we showed how to improve a very simple feedforward neural network language model, by first adding an RNN, and then adding variational dropout and weight tying.
+
 In recent months, we've seen further improvements to the state of the art in RNN language modeling. The current state of the art results are held by <blunsom> and <merity> . These models take use most, if not all, of the methods shown above, and extend them by using better optimizations techniques, new regularization methods, and by finding better hyperparameters for existing models. 
 
 Feel free to ask questions in the comments bellow. 
@@ -105,4 +112,5 @@ Feel free to ask questions in the comments bellow.
 
 
 [^sg]: This model is the skip-gram word2vec model presented in [Efficient Estimation of Word Representations in Vector Space](https://arxiv.org/abs/1301.3781).
+[^api]: For a detailed explanation of this watch [Edward Grefenstette's "Beyond Seq2Seq with Augmented RNNs" lecture.](http://videolectures.net/deeplearning2016_grefenstette_augmented_rnn/) 
 [^zaremba]: This model is the small model presented in [Recurrent Neural Network Regularization](https://arxiv.org/abs/1409.2329).
