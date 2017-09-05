@@ -4,7 +4,7 @@ title: Neural Language Modeling From Scratch (Part 1)
 mathjax: true
 ---
 
-Language models assign probabilities to word sequences. Those three words that appear right above your keyboard on your phone that try to predict the next word you’ll type are one of the uses of language modeling. In the case shown below, the language model is predicting that “from”, “on” and “it” have a high probability of being the next word in the given sentence. Internally, for each word in its’ vocabulary, the language model computes the probability that it will be the next word, but the user only gets to see the top three most probable words.  
+Language models assign probability values to sequences of words. Those three words that appear right above your keyboard on your phone that try to predict the next word you’ll type are one of the uses of language modeling. In the case shown below, the language model is predicting that “from”, “on” and “it” have a high probability of being the next word in the given sentence. Internally, for each word in its’ vocabulary, the language model computes the probability that it will be the next word, but the user only gets to see the top three most probable words.  
 
 <div class="imgcap">
 <img src="/images/lm/keyboard.png">
@@ -23,22 +23,22 @@ To begin we will build a simple model that given a single word taken from some s
 <img src="/images/lm/simple_model.png">
 </div>
 
-We represent words using one-hot vectors: after giving a unique integer ID `n` to each word in our vocabulary, each word is represented as a one dimensional vector of the size of the vocabulary (`N`), which is set to `0` everywhere except for a single `1` at element `n`. 
+We represent words using one-hot vectors: We decide on an arbitrary ordering of the words in the vocabulary and then represent the `n`th word as a vector of the size of the vocabulary, which is set to `0` everywhere except element `n` which is set to `1`. 
 
 The model can be seperated into two components:
 * We start by **encoding** the input word. This is done by taking the one hot vector representing the input word, and multiplying it by a matrix of size `(N,200)` which we call the input embedding (`U`). This multiplication results in a vector of size `200`, which is also referred to as a word embedding. This embedding is a dense representation of the current input word. This representation is both of a much smaller size then the one-hot vector representing the same word, and also has some other interesting properties. For example, while the distance between every two words represented by a one-hot vectors is always the same, these dense representations have the property that words that are close in meaning will have representations that are close in the embedding space.
 
 * The second component can be seen as a **decoder**. After the encoding step, we have a representation of the input word. We multiply it by a matrix of size `(200,N)`, which we call the output embedding (`V`).  The resulting vector of size `N` is then passed through the softmax function, normalizing its values into a probability distribution (meaning each one of the values is between `0` and `1`, and their sum is `1`). 
 
-The decoder is a simple function that takes a representation of the input word and returns a distribution which represents the model's predictions for the next word. 
+The decoder is a simple function that takes a representation of the input word and returns a distribution which represents the model's predictions for the next word: the model assigns to each word the probability that it will be the next word in the sequence.  
 
 To train this model we use stochastic gradient descent, and the loss used is the cross-entropy loss. Intuitively, this loss measures the distance between the output distribution predicted by the model and the target distribution at every timestep. The target distribution at each iteration is a one-hot vector representing the current target word. 
 
-For the `(input, target-output)` word pairs we use the Penn Treebank dataset which contains around 40K sentences from news articles. To generate word pairs for the model to learn from, we will just take every pair of neighbouring words from the text and use the first one as the input word and the second one as the target output word. So for example for the sentence `“The cat is on the mat”` we will extract the following word pairs for training: `(The, cat)`, `(cat, is)`, `(is, on)`, and so on. The vocabulary of the Penn Treebank dataset contains exactly `10,000` words. 
+To train this model, we need pairs of input and target output words. For the `(input, target-output)` pairs we use the Penn Treebank dataset which contains around 40K sentences from news articles, and has a vocabulary of exactly `10,000` words. To generate word pairs for the model to learn from, we will just take every pair of neighbouring words from the text and use the first one as the input word and the second one as the target output word. So for example for the sentence `“The cat is on the mat”` we will extract the following word pairs for training: `(The, cat)`, `(cat, is)`, `(is, on)`, and so on. 
 
 The metric used for reporting the performance of a language model is its perplexity on the test set. It is defined as- $$e^{-\frac{1}{N}\sum_{i=1}^{N} \ln p_{\text{target}_i}}  $$, where $$p_{\text{target}_i}$$ is the probability given by the model to the target word at iteration 'i'. Perplexity is a decreasing function of the average log probability that the model assigns to the target word at every iteration. We want to maximize the probability that we give to the target word at every iteration, which means that we want to minimize the perplexity (the optimal perplexity is `1`).  
 
-The perplexity for the simple model[^sg] is about `183` on the test set, which means that on average it assigns a probability of about $$ 0.005$$  to the target word in every iteration on the test set. Its much better than just a random guess (which would assign a probability of $$\frac {1} {N} = \frac {1} {10,000} = 0.0001$$ to the correct word), but we can do much better.
+The perplexity for the simple model[^sg] is about `183` on the test set, which means that on average it assigns a probability of about $$ 0.005$$  to the target word in every iteration on the test set. Its much better than a naive model which would assign an equal probability to each word (which would assign a probability of $$\frac {1} {N} = \frac {1} {10,000} = 0.0001$$ to the correct word), but we can do much better.
 
  
 ## Using RNNs to improve performance
@@ -50,7 +50,7 @@ We can add memory to our model by augmenting it with a [recurrent neural network
 <img src="/images/lm/rnn_model.png">
 </div>
 
-This model is just like the simple one, just that after encoding the current input word we feed the resulting representation (of size `200`) into a two layer [LSTM](http://colah.github.io/posts/2015-08-Understanding-LSTMs/), which then outputs a vector also of size `200` (at every timestep the LSTM also recieved a vector of size `200` representing it's previous state). Then, just like before, we use the decoder to convert this vector into a vector of probability values. (LSTM is just a fancier RNN that is better at remembering the past. Its "API" is identical to the "API" of an RNN- the LSTM at each time step an input and its previous state, and uses those two inputs to compute an updated state and an output vector[^api].)
+This model is similar to the simple one, just that after encoding the current input word we feed the resulting representation (of size `200`) into a two layer [LSTM](http://colah.github.io/posts/2015-08-Understanding-LSTMs/), which then outputs a vector also of size `200` (at every timestep the LSTM also recieved a vector representing it's previous state). Then, just like before, we use the decoder to convert this output vector into a vector of probability values. (LSTM is just a fancier RNN that is better at remembering the past. Its "API" is identical to the "API" of an RNN- the LSTM at each time step recieves an input and its previous state, and uses those two inputs to compute an updated state and an output vector[^api].)
 
 Now we have a model that at each time step gets not only the current word representation, but also the state of the LSTM from the previous time step, and uses this to predict the next word. The state of the LSTM is a representation of the previously seen words (note that words that we saw recently have a much larger impact on this state then words we saw a while ago). 
 
@@ -77,7 +77,7 @@ We can apply dropout on the vertical (same time step) connections:
 
 The arrows are colored in places were we apply dropout. We use different dropout masks for the different connections (this is indicated by the different colors in the diagram). 
 
-Applying dropout to the recurrent connections harms the performance, and so in this initial use of dropout we use it only on connections within the same time step. Using two LSTM layers, with each layer containing `1500` LSTM units, we acheive a perplexity of `78`. 
+Applying dropout to the recurrent connections harms the performance, and so in this initial use of dropout we use it only on connections within the same time step. Using two LSTM layers, with each layer containing `1500` LSTM units, we acheive a perplexity of `78`[^zarembaLarge]. 
 
 The recently introduced [variational dropout](https://arxiv.org/abs/1512.05287) solves this problem and improves the model's performance even more (to `75` perplexity) by using the same dropout masks at each time step. 
 
@@ -127,4 +127,5 @@ Feel free to ask questions in the comments bellow.
 [^api]: For a detailed explanation of this watch Edward Grefenstette's [Beyond Seq2Seq with Augmented RNNs](http://videolectures.net/deeplearning2016_grefenstette_augmented_rnn/) lecture.
 [^inan]: In parallel to our work, an explanation for weight tying based on [Distilling the Knowledge in a Neural Network](https://arxiv.org/abs/1503.02531) was presented in [Tying Word Vectors and Word Classifiers: A Loss Framework for Language Modeling](https://arxiv.org/abs/1611.01462).
 [^zaremba]: This model is the small model presented in [Recurrent Neural Network Regularization](https://arxiv.org/abs/1409.2329).
+[^zarembaLarge]: This is the large model from [Recurrent Neural Network Regularization](https://arxiv.org/abs/1409.2329). 
 [^paper]: Our [paper](https://arxiv.org/abs/1608.05859) explains this in detail.  
