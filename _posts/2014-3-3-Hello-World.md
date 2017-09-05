@@ -77,7 +77,7 @@ We can apply dropout on the vertical (same time step) connections:
 
 The arrows are colored in places were we apply dropout. A dropout mask for a certain layer indicates which of that layers activations are zeroed. In this case, we use different dropout masks for the different layers (this is indicated by the different colors in the diagram). 
 
-Applying dropout to the recurrent connections harms the performance, and so in this initial use of dropout we use it only on connections within the same time step. Using two LSTM layers, with each layer containing `1500` LSTM units, we acheive a perplexity of `78`[^zarembaLarge] (we dropout activations with a probability of `0.65`). 
+Applying dropout to the recurrent connections harms the performance, and so in this initial use of dropout we use it only on connections within the same time step. Using two LSTM layers, with each layer containing `1500` LSTM units, we acheive a perplexity of `78` (we dropout activations with a probability of `0.65`)[^zarembaLarge]. 
 
 The recently introduced [variational dropout](https://arxiv.org/abs/1512.05287) solves this problem and improves the model's performance even more (to `75` perplexity) by using the same dropout masks at each time step. 
 
