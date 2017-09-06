@@ -20,7 +20,7 @@ The first part of this post presents a simple feedforward neural network that so
 To begin we will build a simple model that given a single word taken from some sentence tries predicting the word following it.
 
 <div class="imgcap">
-<img src="/images/lm/sg.svg">
+<img src="/images/lm/w2v.svg">
 </div>
 
 We represent words using one-hot vectors: We decide on an arbitrary ordering of the words in the vocabulary and then represent the `n`th word as a vector of the size of the vocabulary, which is set to `0` everywhere except element `n` which is set to `1`. 
