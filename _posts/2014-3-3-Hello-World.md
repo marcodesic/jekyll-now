@@ -20,7 +20,7 @@ The first part of this post presents a simple feedforward neural network that so
 To begin we will build a simple model that given a single word taken from some sentence tries predicting the word following it.
 
 <div class="imgcap">
-<img src="/images/lm/simple_model.png">
+<img src="/images/lm/sg.svg">
 </div>
 
 We represent words using one-hot vectors: We decide on an arbitrary ordering of the words in the vocabulary and then represent the `n`th word as a vector of the size of the vocabulary, which is set to `0` everywhere except element `n` which is set to `1`. 
@@ -47,7 +47,7 @@ The biggest problem with the simple model is that to predict the next word in th
 We can add memory to our model by augmenting it with a [recurrent neural network](http://karpathy.github.io/2015/05/21/rnn-effectiveness/) (RNN), as shown below.
 
 <div class="imgcap">
-<img src="/images/lm/rnn_model.png">
+<img src="/images/lm/rrnlm.svg">
 </div>
 
 This model is similar to the simple one, just that after encoding the current input word we feed the resulting representation (of size `200`) into a two layer [LSTM](http://colah.github.io/posts/2015-08-Understanding-LSTMs/), which then outputs a vector also of size `200` (at every timestep the LSTM also recieved a vector representing it's previous state). Then, just like before, we use the decoder to convert this output vector into a vector of probability values. (LSTM is just a fancier RNN that is better at remembering the past. Its "API" is identical to the "API" of an RNN- the LSTM at each time step recieves an input and its previous state, and uses those two inputs to compute an updated state and an output vector[^api].)
