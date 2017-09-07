@@ -4,7 +4,7 @@ title: Neural Language Modeling From Scratch (Part 1)
 mathjax: true
 ---
 
-Language models assign probability values to sequences of words. Those three words that appear right above your keyboard on your phone that try to predict the next word you’ll type are one of the uses of language modeling. In the case shown below, the language model is predicting that “from”, “on” and “it” have a high probability of being the next word in the given sentence. Internally, for each word in its’ vocabulary, the language model computes the probability that it will be the next word, but the user only gets to see the top three most probable words.  
+Language models assign probability values to sequences of words. Those three words that appear right above your keyboard on your phone that try to predict the next word you’ll type are one of the uses of language modeling. In the case shown below, the language model is predicting that “from”, “on” and “it” have a high probability of being the next word in the given sentence. Internally, for each word in its vocabulary, the language model computes the probability that it will be the next word, but the user only gets to see the top three most probable words.  
 
 <div class="imgcap">
 <img src="/images/lm/keyboard.png">
@@ -51,9 +51,9 @@ We can add memory to our model by augmenting it with a [recurrent neural network
 <img src="/images/lm/rnnlm.svg">
 </div>
 
-This model is similar to the simple one, just that after encoding the current input word we feed the resulting representation (of size `200`) into a two layer [LSTM](http://colah.github.io/posts/2015-08-Understanding-LSTMs/), which then outputs a vector also of size `200` (at every timestep the LSTM also received a vector representing it's previous state- this is not shown in the diagram). Then, just like before, we use the decoder to convert this output vector into a vector of probability values. (LSTM is just a fancier RNN that is better at remembering the past. Its "API" is identical to the "API" of an RNN- the LSTM at each time step receives an input and its previous state, and uses those two inputs to compute an updated state and an output vector[^api].)
+This model is similar to the simple one, just that after encoding the current input word we feed the resulting representation (of size `200`) into a two layer [LSTM](http://colah.github.io/posts/2015-08-Understanding-LSTMs/), which then outputs a vector also of size `200` (at every time step the LSTM also receives a vector representing it's previous state- this is not shown in the diagram). Then, just like before, we use the decoder to convert this output vector into a vector of probability values. (LSTM is just a fancier RNN that is better at remembering the past. Its "API" is identical to the "API" of an RNN- the LSTM at each time step receives an input and its previous state, and uses those two inputs to compute an updated state and an output vector[^api].)
 
-Now we have a model that at each time step gets not only the current word representation, but also the state of the LSTM from the previous time step, and uses this to predict the next word. The state of the LSTM is a representation of the previously seen words (note that words that we saw recently have a much larger impact on this state then words we saw a while ago). 
+Now we have a model that at each time step gets not only the current word representation, but also the state of the LSTM from the previous time step, and uses this to predict the next word. The state of the LSTM is a representation of the previously seen words (note that words that we saw recently have a much larger impact on this state than words we saw a while ago). 
 
 As expected, performance improves and the perplexity of this model on the test set is about `114`. An implementation of this model[^zaremba], along with a detailed explanation, is available in [Tensorflow](https://www.tensorflow.org/tutorials/recurrent).
 
@@ -99,7 +99,7 @@ This also occurs in the output embedding. The output embedding receives a repres
 Because the model would like to, given the RNN output, assign similar probability values to similar words, similar words are represented by similar vectors. (Again, if, given a certain RNN output, the probability for the word "quick" is relatively high, we would also expect the probability for the word "rapid" to be relatively high).
 
 
-These two similarities lead us to recently propose a very simple method, [weight tying](https://arxiv.org/abs/1608.05859), to lower the model's parameters and improve its performance. We simply tie its input and output embedding (i.e. we set U=V, meaning that we now have a single embedding matrix that is used both as an input and output embedding). This reduces the perplexity of the RNN model that uses dropout to `73`, and its size is reduced by more than 20%[^inan]. 
+These two similarities led us to recently propose a very simple method, [weight tying](https://arxiv.org/abs/1608.05859), to lower the model's parameters and improve its performance. We simply tie its input and output embedding (i.e. we set U=V, meaning that we now have a single embedding matrix that is used both as an input and output embedding). This reduces the perplexity of the RNN model that uses dropout to `73`, and its size is reduced by more than 20%[^inan]. 
 
 
 #### Why does weight tying work?
